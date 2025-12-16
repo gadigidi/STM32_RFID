@@ -1,0 +1,36 @@
+cd ./Src
+
+rm gpio.c 
+rm uart2.c 
+rm tim2.c 
+rm adc.c 
+rm systick.c
+rm joystick.c
+rm seg7.c
+
+ln -s ~/Embedded_projects/STM32/Src/gpio.c 
+ln -s ~/Embedded_projects/STM32/Src/uart2.c 
+ln -s ~/Embedded_projects/STM32/Src/tim2.c 
+ln -s ~/Embedded_projects/STM32/Src/adc.c 
+ln -s ~/Embedded_projects/STM32/Src/systick.c
+ln -s ~/Embedded_projects/STM32/Src/joystick.c
+ln -s ~/Embedded_projects/STM32/Src/seg7.c
+cd ..
+
+cd ./Inc
+rm gpio.h 
+rm uart2.h 
+rm adc.h 
+rm systick.h 
+rm tim2.h 
+rm joystick.h
+rm seg7.h
+
+ln -s ~/Embedded_projects/STM32/Inc/gpio.h 
+ln -s ~/Embedded_projects/STM32/Inc/uart2.h 
+ln -s ~/Embedded_projects/STM32/Inc/adc.h 
+ln -s ~/Embedded_projects/STM32/Inc/systick.h 
+ln -s ~/Embedded_projects/STM32/Inc/tim2.h 
+ln -s ~/Embedded_projects/STM32/Inc/joystick.h
+ln -s ~/Embedded_projects/STM32/Inc/seg7.h
+cd ..

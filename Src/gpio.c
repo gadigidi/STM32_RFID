@@ -1,0 +1,30 @@
+#include "gpio.h"
+#include "stm32f446xx.h"
+#include <stdint.h>
+//GPIO_TypeDef * GPIO
+void gpio_init(uint32_t enable) {
+  //Enable clock access to GPIOA
+  RCC->AHB1ENR |= enable;
+}
+
+void gpio_pin_mode(GPIO_TypeDef * GPIO, int pin, uint8_t mode) {
+  int lsb = pin * 2;
+  GPIO->MODER &= ~(3U<<lsb);
+  GPIO->MODER |= (mode<<lsb);
+}
+
+void gpio_pin_afr(GPIO_TypeDef * GPIO, int pin, uint8_t af) { // AF0..AF15
+  int lsb = (pin % 8) * 4;
+  int afr = (pin < 8) ? 0 : 1;
+  GPIO->AFR[afr] &= ~(0xFU << lsb);
+  GPIO->AFR[afr] |= af;
+}
+
+void gpio_set_LED(void) {
+  GPIOA->BSRR = LED_PIN;          // LED ON
+}
+
+void gpio_reset_LED(void) {
+  GPIOA->BSRR = (LED_PIN<<16);
+}
+

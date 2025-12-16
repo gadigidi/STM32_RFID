@@ -1,0 +1,1 @@
+/home/gadi/Embedded_projects/STM32/Inc/seg7.h
