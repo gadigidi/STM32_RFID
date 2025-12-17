@@ -1,6 +1,4 @@
-################
-Project Overview
-################
+# Project Overview #
 
 This repository is a **hands-on STM32 firmware learning project**.
 
@@ -17,23 +15,17 @@ Over time, these building blocks are combined into a more complete system.
 
 This repository represents an **ongoing learning process**, not a final product.
 
-##################
-Project Structure
-##################
+# Project Structure #
 
 - Src        -> Source files (.c)
 - Inc        -> Header files (.h)
 - Documents  -> Media and documentation
 
-#######
-Status
-#######
+# Status #
 
 >> In Progress <<
 
-############
-Implemented
-############
+# Implemented #
 
 - **Joystick driver**  
   Analog joystick interfaced via ADC for hands-on experimentation with analog inputs and signal sampling.
