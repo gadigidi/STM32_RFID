@@ -4,8 +4,6 @@ This repository is a **hands-on STM32 firmware learning project** focused on bui
 
 The goal is to gain **practical, low-level experience** with STM32 microcontrollers through **register-level C programming**, working directly with peripherals on real hardware.
 
-The emphasis is on understanding how things work, experimenting, and debugging on target — not on production-ready abstractions.
-
 The project is developed **incrementally**, starting from basic peripheral drivers and gradually integrating them into a complete RF reader application.
 
 This repository represents an **ongoing learning process**, not a finished product.
