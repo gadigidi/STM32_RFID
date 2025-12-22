@@ -6,6 +6,6 @@
 
 void timebase_init(void);
 uint32_t timebase_show_ms(void);
-bool timebase_nonblocking_delay_ms(uint32_t t_start, uint32_t delay_ms);
+bool timebase_blocking_delay_ms(uint32_t t_start, uint32_t delay_ms);
 
 #endif /* TIMBASE_H_ */

@@ -11,24 +11,11 @@ int main(void){
 
 	seg7_init();
 
-	seg7_update_buffer(0xABCD);
-
-
-	//seg7_show_digit(1, 0xa);
-	//seg7_show_digit(2, 1);
-	//seg7_show_digit(3, 2);
-	//seg7_show_digit(4, 3);
-	//seg7_show_digit(1, 4);
-	//seg7_show_digit(2, 5);
-	//seg7_show_digit(3, 6);
-	//seg7_show_digit(4, 7);
-	//seg7_show_digit(1, 8);
-	//seg7_show_digit(2, 9);
+	//seg7_update_buffer(0x7);
+	seg7_set_buffer_for_scroll(0x76543210);
+	seg7_enable_scroll(1);
 
 	while (1) {
-
-
-    	//printf("conversion done. y_val = %d", y_val);
-
+		seg7_scroll_digits();
     }
 }

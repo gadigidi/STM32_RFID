@@ -2,43 +2,40 @@
 
 This repository is a **hands-on STM32 firmware learning project** focused on building an **RFID / RF card reader system**.
 
-The goal is to gain **practical, low-level experience** with STM32 microcontrollers through **register-level C programming**, working directly with peripherals on real hardware.
+The goal is to gain **practical, low-level experience** with STM32 microcontrollers through **register-level C programming**, working directly with real hardware.
 
-The project is developed **incrementally**, starting from basic peripheral drivers and gradually integrating them into a complete RF reader application.
+The project evolves incrementally from individual drivers into a **cohesive embedded system**.
 
-This repository represents an **ongoing learning process**, not a finished product.
+> **It’s not a demo, it’s a system.**
+
+The focus is on **system-level design**: modularity, clear APIs, and non-blocking time-driven execution within a simple `while(1)` main loop.
+Each component is treated as a building block that integrates cleanly into the overall system.
 
 ---
 
 # Project Direction
 
-The main objective is to implement an **RF card reader** using an external RF module (e.g. RC522), fully controlled by STM32 firmware.
+The objective is to implement an **RF card reader system** using an external RF module (RC522) with a **7-segment display for system and card feedback**, controlled entirely by STM32 firmware.
 
-The final system is expected to:
+Planned capabilities include:
 
-* Communicate with an RF module over **SPI**
-* Detect RF cards/tags and read their **UID**
-* Display card or system information
-* Demonstrate system-level integration of multiple peripherals
+- SPI communication with the RF module  
+- RF card/tag detection and **UID** reading  
+- Display of card or system information
+- Integration of multiple peripherals into a single system
 
 ---
 
 # Project Structure
 
-* **Src**        -> Source files (.c)
-* **Inc**        -> Header files (.h)
-* **Documents**  -> Media and documentation
+- **Src/**        – Source files  
+- **Inc/**        – Header files  
+- **Documents/** – Media and documentation  
+- **tools/**     – Helper scripts  
 
 ---
 
 # Status
 
-In Progress
-
----
-
-# Notes
-
-Low-level peripheral drivers (GPIO, timers, ADC, SPI, etc.) are developed as building blocks and integrated progressively into the RF reader system.
-Code is intentionally kept explicit and minimal to emphasize learning and clarity.
+**In Progress**
 
