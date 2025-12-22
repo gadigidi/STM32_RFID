@@ -3,11 +3,11 @@
 
 #include <stdint.h>
 
-#define SYSCLK					16000000
-#define ST_INIT_VAL				(SYSCLK/1000)-1
-#define ST_SRC_CLK				(1U<<2)
-#define ST_COUNTFLAG			(1U<<16)
-#define ST_ENABLE				(1U<<0)
+#define SYSCLK                    16000000
+#define ST_INIT_VAL                (SYSCLK/1000)-1
+#define ST_SRC_CLK                (1U<<2)
+#define ST_COUNTFLAG            (1U<<16)
+#define ST_ENABLE                (1U<<0)
 
 
 

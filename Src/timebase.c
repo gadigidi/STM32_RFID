@@ -5,27 +5,27 @@
 #include <stdbool.h>
 
 void timebase_init(void) {
-	tim2_init();
+    tim2_init();
 
-	tim2_enable_interrupt();
+    tim2_enable_interrupt();
 
-	tim2_enable();
+    tim2_enable();
 }
 
 static volatile uint32_t tim2_ms_cnt = 0;
 void timebase_increase_ms(void) {
-	tim2_ms_cnt++;
+    tim2_ms_cnt++;
 }
 
 uint32_t timebase_show_ms(void) {
-	return tim2_ms_cnt;
+    return tim2_ms_cnt;
 }
 
 bool timebase_blocking_delay_ms(uint32_t t_start, uint32_t delay_ms) {
-	uint32_t t_now = timebase_show_ms();
-	while ((t_now - t_start) < delay_ms) {
-		t_now = timebase_show_ms();
-	}
-	return 1;
+    uint32_t t_now = timebase_show_ms();
+    while ((t_now - t_start) < delay_ms) {
+        t_now = timebase_show_ms();
+    }
+    return 1;
 }
 

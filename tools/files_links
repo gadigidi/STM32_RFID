@@ -9,7 +9,8 @@ rm joystick.c
 rm seg7.c
 rm isr.c
 rm timebase.c
-rm timebase_isr.c
+rm spi.c
+rm rfid.c
 
 ln -s ~/Embedded_projects/STM32/Src/gpio.c 
 ln -s ~/Embedded_projects/STM32/Src/uart2.c 
@@ -20,7 +21,8 @@ ln -s ~/Embedded_projects/STM32/Src/joystick.c
 ln -s ~/Embedded_projects/STM32/Src/seg7.c
 ln -s ~/Embedded_projects/STM32/Src/isr.c
 ln -s ~/Embedded_projects/STM32/Src/timebase.c
-ln -s ~/Embedded_projects/STM32/Src/timebase_isr.c
+ln -s ~/Embedded_projects/STM32/Src/spi.c
+ln -s ~/Embedded_projects/STM32/Src/rfid.c
 cd ..
 
 cd ./Inc
@@ -33,6 +35,10 @@ rm joystick.h
 rm seg7.h
 rm isr.h
 rm timebase.h
+rm timebase_isr.h
+rm spi.h
+rm rfid.h
+rm rfid_isr.h
 
 ln -s ~/Embedded_projects/STM32/Inc/gpio.h 
 ln -s ~/Embedded_projects/STM32/Inc/uart2.h 
@@ -43,4 +49,9 @@ ln -s ~/Embedded_projects/STM32/Inc/joystick.h
 ln -s ~/Embedded_projects/STM32/Inc/seg7.h
 ln -s ~/Embedded_projects/STM32/Inc/isr.h
 ln -s ~/Embedded_projects/STM32/Inc/timebase.h
+ln -s ~/Embedded_projects/STM32/Inc/timebase_isr.h
+ln -s ~/Embedded_projects/STM32/Inc/spi.h
+ln -s ~/Embedded_projects/STM32/Inc/rfid.h
+ln -s ~/Embedded_projects/STM32/Inc/rfid_isr.h
+
 cd ..
