@@ -17,7 +17,12 @@ void gpio_pin_afr(GPIO_TypeDef *GPIO, int pin, uint8_t af) { // AF0..AF15
     int lsb = (pin % 8) * 4;
     int afr = (pin < 8) ? 0 : 1;
     GPIO->AFR[afr] &= ~(0xFU << lsb);
-    GPIO->AFR[afr] |= af;
+    GPIO->AFR[afr] |= (af << lsb);
+}
+
+void gpio_pin_pupdr(GPIO_TypeDef *GPIO, int pin) { // AF0..AF15
+    GPIO->PUPDR &= ~(3U << (pin * 2));
+    GPIO->PUPDR |= (1U << (pin * 2));
 }
 
 void gpio_set_LED(void) {

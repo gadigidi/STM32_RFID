@@ -8,22 +8,22 @@
 void spi1_init(void) {
     gpio_init(GPIOAEN);
 
-    //config SPI1_SCK as AF 5
+    //Config SPI1_SCK as AF 5
     gpio_pin_mode(GPIOA, SPI1_SCK, GPIO_MODE_AF);
     gpio_pin_afr(GPIOA, SPI1_SCK, 5);
 
-    //config SPI_MOSI as AF 5
+    //Config SPI_MOSI as AF 5
     gpio_pin_mode(GPIOA, SPI1_MOSI, GPIO_MODE_AF);
     gpio_pin_afr(GPIOA, SPI1_MOSI, 5);
 
-    //config SPI_MISO as AF 5
+    //Config SPI_MISO as AF 5
     gpio_pin_mode(GPIOA, SPI1_MISO, GPIO_MODE_AF);
     gpio_pin_afr(GPIOA, SPI1_MISO, 5);
 }
 
 void spi1_config_baudrate(uint8_t br) {
     //Config SPI1 clk frequency
-    SPI1->CR1 &= ~(3U << 3);
+    SPI1->CR1 &= ~(7U << 3);
     SPI1->CR1 |= (br << 3);
 }
 
@@ -62,17 +62,17 @@ void spi1_enable(uint8_t enable) {
     SPI1->CR1 |= (enable << 6);
 }
 
-void spi1_send_byte(uint8_t data) {
+uint8_t spi1_txrx_byte(uint8_t data) {
     while (!(SPI1->SR & (1U << 1))) { //wait for TXE=1
     }
     SPI1->DR = data;
     while (!(SPI1->SR & (1U << 0))) { //wait for RXNE=1
     }
-    uint8_t rx = spi1_read_dr();
+    uint8_t rx = SPI1->DR;
+    while ((SPI1->SR & (1U << 0))) { //wait for RXNE=0 to ensure flag was cleaned
+    }
     while ((SPI1->SR & (1U << 7))) { //wait for BSY=0
     }
+    return rx;
 }
 
-uint32_t spi1_read_dr() {
-    return SPI1->DR;
-}

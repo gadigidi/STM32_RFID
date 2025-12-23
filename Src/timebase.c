@@ -21,7 +21,8 @@ uint32_t timebase_show_ms(void) {
     return tim2_ms_cnt;
 }
 
-bool timebase_blocking_delay_ms(uint32_t t_start, uint32_t delay_ms) {
+bool timebase_blocking_delay_ms(uint32_t delay_ms) {
+    uint32_t t_start = timebase_show_ms();
     uint32_t t_now = timebase_show_ms();
     while ((t_now - t_start) < delay_ms) {
         t_now = timebase_show_ms();

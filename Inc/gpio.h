@@ -22,6 +22,7 @@
 void gpio_init(uint32_t enable);
 void gpio_pin_mode(GPIO_TypeDef *GPIO, int pin, uint8_t mode);
 void gpio_pin_afr(GPIO_TypeDef *GPIO, int pin, uint8_t af); // AF0..AF15
+void gpio_pin_pupdr(GPIO_TypeDef *GPIO, int pin);
 void gpio_set_LED(void);
 void gpio_reset_LED(void);
 

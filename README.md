@@ -1,32 +1,27 @@
-# Project Overview
+# RFID Reader System - STM32 Firmware Project
 
-This repository is a **hands-on STM32 firmware learning project** focused on building an **RFID / RF card reader system**.
+> **It’s not a demo - it’s a system.**
 
-The goal is to gain **practical, low-level experience** with STM32 microcontrollers through **register-level C programming**, working directly with real hardware.
+## Overview
 
-The project evolves incrementally from individual drivers into a **cohesive embedded system**.
+A **hands-on STM32 firmware project** implementing an **RFID / RF card reader system** using an external **RC522 module** and a **7-segment display**.
 
-> **It’s not a demo, it’s a system.**
+The project focuses on **low-level, register-level C programming** on real hardware evolving from individual drivers into a **cohesive embedded system**.
 
-The focus is on **system-level design**: modularity, clear APIs, and non-blocking time-driven execution within a simple `while(1)` main loop.
-Each component is treated as a building block that integrates cleanly into the overall system.
+Emphasis is placed on **system-level design**: modularity, clear APIs, and non-blocking time-driven executions.
 
 ---
 
-# Project Direction
+## Scope
 
-The objective is to implement an **RF card reader system** using an external RF module (RC522) with a **7-segment display for system and card feedback**, controlled entirely by STM32 firmware.
-
-Planned capabilities include:
-
-- SPI communication with the RF module  
+- SPI communication with the RC522 RFID module  
 - RF card/tag detection and **UID** reading  
-- Display of card or system information
-- Integration of multiple peripherals into a single system
+- 7-segment display for system and card feedback  
+- Integration of multiple peripherals into a single firmware system  
 
 ---
 
-# Project Structure
+## Project Structure
 
 - **Src/**        – Source files  
 - **Inc/**        – Header files  
@@ -35,7 +30,7 @@ Planned capabilities include:
 
 ---
 
-# Status
+## Status
 
-**In Progress**
+**Getting Close**
 

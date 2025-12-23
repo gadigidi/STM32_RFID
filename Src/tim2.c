@@ -21,7 +21,7 @@ void tim2_enable(void) {
 
 void tim2_enable_interrupt(void) {
     TIM2->DIER |= TIM2_UIEN;
-    enable_interrupts(TIM2_IRQn);
+    isr_enable_interrupts(TIM2_IRQn);
 }
 
 void tim2_wait_tick(void){

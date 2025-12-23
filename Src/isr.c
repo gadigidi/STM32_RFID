@@ -1,15 +1,13 @@
 #include "isr.h"
-#include "rfid_isr.h"
-#include "timebase.h"
-#include "timebase_isr.h"
 #include "tim2.h"
-#include "seg7.h"
+#include "timebase.h"
 #include "rfid.h"
+#include "seg7.h"
 #include "stm32f446xx.h"
 #include <stdint.h>
 
 
-void enable_interrupts(int irqn) {
+void isr_enable_interrupts(int irqn) {
     int reg = irqn / 32;
     int offset = irqn % 32;
     NVIC->ISER[reg] |= (1U << offset);
@@ -24,6 +22,8 @@ void TIM2_IRQHandler(void) {
 }
 
 void EXTI1_IRQHandler(void) {
-    EXTI->PR |= (1U << 1);
-    rfid_update_irq(1U);
+    if (EXTI->PR & (1U << 1)) {
+        EXTI->PR = (1U << 1);
+        rfid_update_irq_flag();
+    }
 }

@@ -11,7 +11,7 @@
 #define SPI1_MOSI           7U //PA7
 #define SPI1_MISO           6U //PA6
 
-#define SPI_BR_DIV64        5U //SPI1_CLK_HZ = APB2CLK_HZ/64
+#define SPI_BR_DIV64        7U //SPI1_CLK_HZ = APB2CLK_HZ/64
 #define SPI_MASTER          1U
 #define SPI_SLAVE           0
 #define SPI_MODE_0          0
@@ -32,7 +32,6 @@ void spi1_config_nss(uint8_t nss);
 void spi1_config_data_size(uint8_t data_size);
 void spi1_enable(uint8_t enable);
 
-void spi1_send_byte(uint8_t data);
-uint32_t spi1_read_dr();
+uint8_t spi1_txrx_byte(uint8_t data);
 
 #endif /* SPI_H_ */

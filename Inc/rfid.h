@@ -4,9 +4,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define RFID_IRQ_PIN            1U //connected to PA1
-#define SPI1_CS_BSRR            (1U<<1) //CS in this project is in PA1
-
 void rfid_init(void);
+void rfid_enable_irq(void);
+void rfid_spi1_config(void);
+void rfid_fsm(void);
+void rfid_update_irq_flag(void);
 
 #endif /* RFID_H_ */

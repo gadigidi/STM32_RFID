@@ -37,7 +37,7 @@ void adc1_config_regular_sequence(uint8_t index, uint8_t channel){
         ADC1->SQR1 &= ~(7<<(index*5));
         ADC1->SQR1 |= channel<<(index*5);
     }
-    else if(seq>6){
+    else if (index > 6) {
         ADC1->SQR2 &= ~(7<<(index*5));
         ADC1->SQR2 |= channel<<(index*5);
     }
@@ -50,11 +50,6 @@ void adc1_config_regular_sequence(uint8_t index, uint8_t channel){
 void adc1_config_sequence_length (int length){
     ADC1->SQR1 &= ~(0xFU<<20);
     ADC1->SQR1 |= (length<<20);
-}
-
-void adc1_enable(void){
-    //Enable ADC1 module
-    ADC1->CR2 |= CR2_ADON;
 }
 
 void adc1_start_conversion(void) {
