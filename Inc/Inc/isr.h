@@ -1,1 +1,0 @@
-/home/gadi/Embedded_projects/STM32/Inc/isr.h
