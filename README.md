@@ -1,8 +1,8 @@
-# RFID Reader System – STM32 Firmware Project
+# RFID Reader System - STM32 Firmware Project
 
 ## Overview
 
-> **It’s not a demo – it’s a system.**
+> **It’s not a demo - it’s a system.**
 
 This project is intentionally designed as a **system-level embedded application**, built **from scratch** using custom peripheral drivers.
 
@@ -28,10 +28,10 @@ This approach reflects real embedded product design considerations such as timin
 
 ## Project Structure
 
-- **Src/**        – Source files  
-- **Inc/**        – Header files  
-- **Documents/** – Media and documentation  
-- **tools/**     – Helper scripts  
+- **Src/**        - Source files  
+- **Inc/**        - Header files  
+- **Documents/** - Media and documentation  
+- **tools/**     - Helper scripts  
 
 ---
 
