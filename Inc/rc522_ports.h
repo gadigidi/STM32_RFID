@@ -12,6 +12,8 @@
 #define RFID_RST_HIGH_BSRR          (1U<<RFID_RST_PIN)
 #define RFID_RST_LOW_BSRR           (1U<<(RFID_RST_PIN+16))
 
+#define RFID_MISO_PIN               6U
+
 void rc522_ports_init(void);
 void rc522_assert_reset(void);
 void rc522_deassert_reset(void);

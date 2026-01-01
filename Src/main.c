@@ -1,5 +1,6 @@
 #include "rfid.h"
 #include "rc522.h"
+#include "rc522_debug.h"
 #include "spi.h"
 #include "seg7.h"
 #include "timebase.h"
@@ -11,22 +12,23 @@
 
 int main(void){
 
+    uint32_t time_now;
+    uint8_t value;
     timebase_init();
     
     //seg7_init();
     //seg7_enable_scroll(1);
 
-
     rfid_init();
-    gpio_pin_pupdr(GPIOA, 6);
-    volatile uint32_t avg = 0;
-    uint8_t rd_data = rc522_read_reg(0x37);
-    //rd_data = rc522_read_reg(0x37);
-    //rd_data = rc522_read_reg(0x37);
 
-    avg = 0;
+    rc522_debug();
+
+    volatile uint32_t dummy = 0;
+
+    dummy = 0;
     while (1) {
-        //rfid_fsm();
+        time_now = timebase_show_ms();
+        rfid_fsm();
         //seg7_scroll_digits();
     }
 }

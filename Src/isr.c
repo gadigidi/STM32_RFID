@@ -6,7 +6,7 @@
 #include "stm32f446xx.h"
 #include <stdint.h>
 
-
+#include "rc522.h" //FIXME remove me
 void isr_enable_interrupts(int irqn) {
     int reg = irqn / 32;
     int offset = irqn % 32;
@@ -24,6 +24,7 @@ void TIM2_IRQHandler(void) {
 void EXTI1_IRQHandler(void) {
     if (EXTI->PR & (1U << 1)) {
         EXTI->PR = (1U << 1);
+        //rc522_debug();
         rfid_update_irq_flag();
     }
 }
