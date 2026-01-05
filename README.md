@@ -16,16 +16,6 @@ This approach reflects real embedded product design considerations such as timin
 
 ---
 
-## Scope
-
-- SPI communication with the RC522 RFID module  
-- RF card and tag detection (ISO14443A)  
-- Interrupt-driven RFID event handling  
-- Background 7-segment display refresh  
-- Integration of multiple peripherals into a single embedded firmware system  
-
----
-
 ## Project Structure
 
 - **Src/**        - Source files  
@@ -39,9 +29,11 @@ This approach reflects real embedded product design considerations such as timin
 
 The RC522 module is connected to the STM32 via SPI.
 
-The RC522 **RST** pin is held high using an external **10 kΩ pull-up resistor** to 3.3 V to ensure stable operation and prevent unintended resets.
+The RC522 **RST** pin and CS pin are held high using an external **10 kΩ pull-up resistor** to 3.3 V to ensure stable operation and prevent unintended resets.
 
 The **IRQ** signal is connected to an EXTI-capable GPIO pin for interrupt-driven operation.
+
+The 7-segment display is connected to the STM32 GPIO pins through **current-limiting resistors** for each segment to protect the LEDs and control the segment current.
 
 ---
 

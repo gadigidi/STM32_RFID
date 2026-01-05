@@ -17,8 +17,6 @@ void TIM2_IRQHandler(void) {
     timebase_increase_ms();
     TIM2->SR &= ~TIM2_SR_UIF;
 
-    //Auto refresh for the 7-segments screen
-    seg7_auto_refresh();
 }
 
 void EXTI1_IRQHandler(void) {

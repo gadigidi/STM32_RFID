@@ -23,19 +23,23 @@
 #define SEG7_SEG_ACTIVE         0
 #define SEG7_DIG_ACTIVE         1U
 
-extern const uint32_t seg_bsrr[17];
-extern const uint32_t dig_bsrr[4];
 #define SEG7_BSRR_DIGS_OFF      15U
+
+typedef enum {
+    SEG7_OFF, SEG7_IDLE_ANIMATION, SEG7_SCROLL
+} seg7_state_t;
 
 void seg7_init (void);
 void seg7_select_digit(uint32_t bsrr);
 void seg7_deselect_all_digits(void);
 void seg7_select_seg(uint32_t bsrr);
-void seg7_show_digit(int D, int digit);
-void seg7_update_buffer(uint16_t num);
+void seg7_show_digit(int digit, int token);
 void seg7_auto_refresh(void);
 void seg7_set_buffer_for_scroll(uint32_t num);
-void seg7_enable_scroll(bool enable);
+void seg7_set_fsm_state(seg7_state_t new_state);
+void seg7_fsm(void);
+void seg7_show_animation(void);
 void seg7_scroll_digits(void);
+
 
 #endif /* SEG7_H_ */

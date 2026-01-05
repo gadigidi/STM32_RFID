@@ -13,10 +13,10 @@
 int main(void){
 
     uint32_t time_now;
-    uint8_t value;
+    //uint8_t value;
     timebase_init();
     
-    //seg7_init();
+    seg7_init();
     //seg7_enable_scroll(1);
 
     rfid_init();
@@ -27,7 +27,11 @@ int main(void){
 
     dummy = 0;
     while (1) {
-        time_now = timebase_show_ms();
+        //time_now = timebase_show_ms();
+        seg7_auto_refresh();
+
+        sge7_fsm();
+
         rfid_fsm();
         //seg7_scroll_digits();
     }

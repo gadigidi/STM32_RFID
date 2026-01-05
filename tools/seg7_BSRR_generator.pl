@@ -20,8 +20,14 @@ push @nums, [qw(A D E F)]; #C
 push @nums, [qw(B C D E G)]; #d
 push @nums, [qw(A D E F G)]; #E
 push @nums, [qw(A E F G)]; #F
-push @nums, [qw(G)]; #-
-
+push @nums, [qw()]; #NONE
+push @nums, [qw(A)]; #Top segment
+push @nums, [qw(G)]; #Middle segment
+push @nums, [qw(D)]; #Bottom segment
+push @nums, [qw(B)]; #Top right
+push @nums, [qw(C)]; #bottom right
+push @nums, [qw(F)]; #Top left
+push @nums, [qw(E)]; #Bottom left
 
 my %seg_ports = (
                  "A" => 5,
@@ -57,7 +63,7 @@ foreach my $num(@nums){
     }
   }
   printf "    ${mask}U";
-  if ($i<16){
+  if ($i<23){
     print ",\n";
   }
   else{
