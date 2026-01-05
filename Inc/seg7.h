@@ -28,10 +28,13 @@
 typedef enum {
     SEG7_OFF,
     SEG7_IDLE_ANIMATION,
-    SEG7_REQA_ANIMATION,
-    SEG7_ERROR_ANIMATION,
+    SEG7_BLINKING_ANIMATION,
     SEG7_SCROLL
 } seg7_state_t;
+
+typedef enum {
+    SEG7_GOOD, SEG7_BAD, SEG7_ERROR
+} seg7_blinking_text_t;
 
 void seg7_init (void);
 void seg7_select_digit(uint32_t bsrr);
@@ -40,12 +43,12 @@ void seg7_select_seg(uint32_t bsrr);
 void seg7_show_digit(int digit, int token);
 void seg7_auto_refresh(void);
 void seg7_set_buffer_for_scroll(uint32_t num);
+void seg7_show_idle_animation(void);
+void seg7_set_blinking_text(seg7_blinking_text_t text);
+void seg7_show_blinking_animation(void);
+void seg7_scroll_digits(void);
 void seg7_set_fsm_state(seg7_state_t new_state);
 void seg7_fsm(void);
-void seg7_show_idle_animation(void);
-void seg7_show_reqa_animation(void);
-void seg7_show_error_animation(void);
-void seg7_scroll_digits(void);
 
 
 #endif /* SEG7_H_ */

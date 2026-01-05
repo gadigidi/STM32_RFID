@@ -89,9 +89,9 @@ void seg7_auto_refresh(void) {
 
 static uint8_t scroll_buffer[15];
 void seg7_set_buffer_for_scroll(uint32_t num) {
-    scroll_buffer[0] = 18; //'-'
-    scroll_buffer[1] = 18; //'-'
-    scroll_buffer[2] = 18; //'-'
+    scroll_buffer[0] = 16; //None
+    scroll_buffer[1] = 16; //None
+    scroll_buffer[2] = 16; //None
     scroll_buffer[3] = ((num >> 0) & 0xFU);
     scroll_buffer[4] = ((num >> 4) & 0xFU);
     scroll_buffer[5] = ((num >> 8) & 0xFU);
@@ -100,7 +100,65 @@ void seg7_set_buffer_for_scroll(uint32_t num) {
     scroll_buffer[8] = ((num >> 20) & 0xFU);
     scroll_buffer[9] = ((num >> 24) & 0xFU);
     scroll_buffer[10] = ((num >> 28) & 0xFU);
-    scroll_buffer[11] = 18; //'-'
+    scroll_buffer[11] = 16; //None
+}
+
+const int idle_animation_buffer[12] = { 17, 17, 17, 17, 20, 21, 19, 19, 19, 19,
+        23, 22 };
+const int idle_animation_order[12] = { 0, 1, 2, 3, 3, 3, 3, 2, 1, 0, 0, 0 };
+static int curr_idle_animation_digit = 0;
+void seg7_show_idle_animation(void) {
+    int digit = idle_animation_order[curr_idle_animation_digit];
+    for (int i = 0; i < 4; i++) {
+        if (i == digit) {
+            disp_nibble[i] = idle_animation_buffer[curr_idle_animation_digit];
+        } else {
+            disp_nibble[i] = 16; //None
+        }
+    }
+}
+
+const int good_blinking_buffer[4] = { 9, 0, 0, 13 }; //900d
+const int bad_blinking_buffer[4] = { 11, 10, 13, 16 }; //bAd
+const int error_blinking_buffer[4] = { 14, 24, 24, 16 }; //Err
+const int default_blinking_buffer[4] = { 16, 16, 16, 16 };
+static const int *blinking_buffer = default_blinking_buffer;
+void seg7_set_blinking_text(seg7_blinking_text_t text) {
+    switch (text) {
+    case SEG7_GOOD:
+        blinking_buffer = good_blinking_buffer;
+        break;
+    case SEG7_BAD:
+        blinking_buffer = bad_blinking_buffer;
+        break;
+    case SEG7_ERROR:
+        blinking_buffer = error_blinking_buffer;
+        break;
+    default:
+
+    }
+}
+
+static int blinking_stage = 0;
+void seg7_show_blinking_animation(void) {
+
+    disp_nibble[0] = (blinking_stage) ? blinking_buffer[0] : 16; //Left digit
+    disp_nibble[1] = (blinking_stage) ? blinking_buffer[1] : 16; //Second digit
+    disp_nibble[2] = (blinking_stage) ? blinking_buffer[2] : 16; //Third digit
+    disp_nibble[3] = (blinking_stage) ? blinking_buffer[3] : 16; //Right digit
+}
+
+static int curr_scroll_digit = 0;
+void seg7_scroll_digits(void) {
+    int nibbel2show;
+    nibbel2show = (curr_scroll_digit) % 12;
+    disp_nibble[3] = scroll_buffer[nibbel2show];
+    nibbel2show = (curr_scroll_digit + 1) % 12;
+    disp_nibble[2] = scroll_buffer[nibbel2show];
+    nibbel2show = (curr_scroll_digit + 2) % 12;
+    disp_nibble[1] = scroll_buffer[nibbel2show];
+    nibbel2show = (curr_scroll_digit + 3) % 12;
+    disp_nibble[0] = scroll_buffer[nibbel2show];
 }
 
 static seg7_state_t seg7_state;
@@ -108,14 +166,9 @@ void seg7_set_fsm_state(seg7_state_t new_state) {
     seg7_state = new_state;
 }
 
-static int curr_idle_animation_digit = 0;
-static int curr_scroll_digit = 0;
-static int reqa_stage = 0;
-static int error_stage = 0;
-static uint32_t scroll_start_time = 0;
 static uint32_t idle_animation_start_time = 0;
-static uint32_t reqa_animation_start_time = 0;
-static uint32_t error_animation_start_time = 0;
+static uint32_t blinking_animation_start_time = 0;
+static uint32_t scroll_start_time = 0;
 void seg7_fsm(void) {
     switch (seg7_state) {
     case SEG7_OFF: {
@@ -133,24 +186,13 @@ void seg7_fsm(void) {
         break;
     }
 
-    case SEG7_REQA_ANIMATION: {
+    case SEG7_BLINKING_ANIMATION: {
         uint32_t time_now = timebase_show_ms();
-        uint32_t time_delta = time_now - reqa_animation_start_time;
+        uint32_t time_delta = time_now - blinking_animation_start_time;
         if (time_delta >= 300) {
-            seg7_show_reqa_animation();
-            reqa_stage = (reqa_stage + 1) % 2;
-            reqa_animation_start_time = timebase_show_ms();
-        }
-        break;
-    }
-
-    case SEG7_ERROR_ANIMATION: {
-        uint32_t time_now = timebase_show_ms();
-        uint32_t time_delta = time_now - error_animation_start_time;
-        if (time_delta >= 300) {
-            seg7_show_error_animation();
-            error_stage = (error_stage + 1) % 2;
-            error_animation_start_time = timebase_show_ms();
+            seg7_show_blinking_animation();
+            blinking_stage = (blinking_stage + 1) % 2;
+            blinking_animation_start_time = timebase_show_ms();
         }
         break;
     }
@@ -163,52 +205,10 @@ void seg7_fsm(void) {
             curr_scroll_digit = (curr_scroll_digit + 1) % 12;
             scroll_start_time = timebase_show_ms();
         }
+        break;
     }
     }        //switch
 }
-
-const int idle_animation_buffer[12] = { 17, 17, 17, 17, 20, 21, 19, 19, 19, 19,
-        23, 22 };
-const int idle_animation_order[12] = { 0, 1, 2, 3, 3, 3, 3, 2, 1, 0, 0, 0 };
-void seg7_show_idle_animation(void) {
-    int digit = idle_animation_order[curr_idle_animation_digit];
-    for (int i = 0; i < 4; i++) {
-        if (i == digit) {
-            disp_nibble[i] = idle_animation_buffer[curr_idle_animation_digit];
-        } else {
-            disp_nibble[i] = 16; //None
-        }
-    }
-}
-
-void seg7_show_reqa_animation(void) {
-
-    for (int i = 0; i < 4; i++) {
-        disp_nibble[i] = (reqa_stage) ? 18 : 16;
-    }
-}
-
-void seg7_show_error_animation(void) {
-
-    disp_nibble[0] = (error_stage) ? 14 : 16; //E
-    disp_nibble[1] = (error_stage) ? 24 : 16; //r
-    disp_nibble[2] = (error_stage) ? 24 : 16; //r
-    disp_nibble[3] = 16; //None
-}
-
-void seg7_scroll_digits(void) {
-    int nibbel2show;
-    nibbel2show = (curr_scroll_digit) % 12;
-    disp_nibble[3] = scroll_buffer[nibbel2show];
-    nibbel2show = (curr_scroll_digit + 1) % 12;
-    disp_nibble[2] = scroll_buffer[nibbel2show];
-    nibbel2show = (curr_scroll_digit + 2) % 12;
-    disp_nibble[1] = scroll_buffer[nibbel2show];
-    nibbel2show = (curr_scroll_digit + 3) % 12;
-    disp_nibble[0] = scroll_buffer[nibbel2show];
-}
-
-
 
 
 
