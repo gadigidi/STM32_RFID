@@ -29,7 +29,7 @@ This approach reflects real embedded product design considerations such as timin
 
 The RC522 module is connected to the STM32 via SPI.
 
-The RC522 **RST** pin and CS pin are held high using an external **10 kΩ pull-up resistor** to 3.3 V to ensure stable operation and prevent unintended resets.
+The RC522 **RST** pin and **CS** pin are held high using an external **10 kΩ pull-up resistors** to 3.3 V to ensure stable operation and prevent unintended resets.
 
 The **IRQ** signal is connected to an EXTI-capable GPIO pin for interrupt-driven operation.
 

@@ -24,10 +24,10 @@ push @nums, [qw()]; #NONE
 push @nums, [qw(A)]; #Top segment
 push @nums, [qw(G)]; #Middle segment
 push @nums, [qw(D)]; #Bottom segment
-push @nums, [qw(B)]; #Top right
-push @nums, [qw(C)]; #bottom right
-push @nums, [qw(F)]; #Top left
-push @nums, [qw(E)]; #Bottom left
+push @nums, [qw(B)]; #Top right segment
+push @nums, [qw(C)]; #bottom right segment
+push @nums, [qw(F)]; #Top left segment
+push @nums, [qw(E)]; #Bottom left segment
 
 my %seg_ports = (
                  "A" => 5,
@@ -47,7 +47,7 @@ my %dig_ports = (
                  "4" => 3,
                );
            
-print "const uint32_t seg_bsrr[] = {\n";
+print "const uint32_t seg_bsrr[24] = {\n";
 my $i = 0;
 foreach my $num(@nums){
   my $mask = 0;
@@ -75,7 +75,7 @@ print "};\n\n";
 
 
 
-print "const uint32_t dig_bsrr[] = {\n";
+print "const uint32_t dig_bsrr[4] = {\n";
 foreach my $digit (1.. 4){
   my $mask = 0;
   foreach my $i (0.. 3){
