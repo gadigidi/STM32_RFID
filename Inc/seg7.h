@@ -26,7 +26,11 @@
 #define SEG7_BSRR_DIGS_OFF      15U
 
 typedef enum {
-    SEG7_OFF, SEG7_IDLE_ANIMATION, SEG7_SCROLL
+    SEG7_OFF,
+    SEG7_IDLE_ANIMATION,
+    SEG7_REQA_ANIMATION,
+    SEG7_ERROR_ANIMATION,
+    SEG7_SCROLL
 } seg7_state_t;
 
 void seg7_init (void);
@@ -38,7 +42,9 @@ void seg7_auto_refresh(void);
 void seg7_set_buffer_for_scroll(uint32_t num);
 void seg7_set_fsm_state(seg7_state_t new_state);
 void seg7_fsm(void);
-void seg7_show_animation(void);
+void seg7_show_idle_animation(void);
+void seg7_show_reqa_animation(void);
+void seg7_show_error_animation(void);
 void seg7_scroll_digits(void);
 
 

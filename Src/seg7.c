@@ -5,12 +5,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-const uint32_t seg_bsrr[24] = { 1610614752U, 1730150592U, 1149248352U,
+const uint32_t seg_bsrr[25] = { 1610614752U, 1730150592U, 1149248352U,
         1174413792U, 1126180032U, 1111500192U, 1077946272U, 1728053472U,
         1073752032U, 1107305952U, 1090528992U, 1080043392U, 1623197472U,
         1142956992U, 1086334752U, 1103111712U, 1742733312U, 1740636192U,
         1205870592U, 1725956352U, 1738539072U, 1734344832U, 1675625472U,
-        1709179392U };
+        1709179392U, 1163928192U };
 
 //0-9: 0..9
 //10-15: A..F
@@ -22,6 +22,7 @@ const uint32_t seg_bsrr[24] = { 1610614752U, 1730150592U, 1149248352U,
 //21: #bottom right
 //22: #Top left
 //23: #Bottom left
+//24: #r
 
 const uint32_t dig_bsrr[4] = { 65550U, 131085U, 262155U, 524295U };
 
@@ -107,10 +108,14 @@ void seg7_set_fsm_state(seg7_state_t new_state) {
     seg7_state = new_state;
 }
 
-static int curr_animation_digit = 0;
+static int curr_idle_animation_digit = 0;
 static int curr_scroll_digit = 0;
+static int reqa_stage = 0;
+static int error_stage = 0;
 static uint32_t scroll_start_time = 0;
-static uint32_t animation_start_time = 0;
+static uint32_t idle_animation_start_time = 0;
+static uint32_t reqa_animation_start_time = 0;
+static uint32_t error_animation_start_time = 0;
 void seg7_fsm(void) {
     switch (seg7_state) {
     case SEG7_OFF: {
@@ -119,19 +124,38 @@ void seg7_fsm(void) {
 
     case SEG7_IDLE_ANIMATION: {
         uint32_t time_now = timebase_show_ms();
-        uint32_t time_delta = time_now - animation_start_time;
+        uint32_t time_delta = time_now - idle_animation_start_time;
         if (time_delta >= 150) {
-            seg7_show_animation();
-            curr_animation_digit = (curr_animation_digit + 1) % 12;
-            animation_start_time = timebase_show_ms();
+            seg7_show_idle_animation();
+            curr_idle_animation_digit = (curr_idle_animation_digit + 1) % 12;
+            idle_animation_start_time = timebase_show_ms();
         }
         break;
     }
 
+    case SEG7_REQA_ANIMATION: {
+        uint32_t time_now = timebase_show_ms();
+        uint32_t time_delta = time_now - reqa_animation_start_time;
+        if (time_delta >= 300) {
+            seg7_show_reqa_animation();
+            reqa_stage = (reqa_stage + 1) % 2;
+            reqa_animation_start_time = timebase_show_ms();
+        }
+        break;
+    }
+
+    case SEG7_ERROR_ANIMATION: {
+        uint32_t time_now = timebase_show_ms();
+        uint32_t time_delta = time_now - error_animation_start_time;
+        if (time_delta >= 300) {
+            seg7_show_error_animation();
+            error_stage = (error_stage + 1) % 2;
+            error_animation_start_time = timebase_show_ms();
+        }
+        break;
+    }
 
     case SEG7_SCROLL: {
-        //animation_enable = 0;
-        //scroll_enable = 0;
         uint32_t time_now = timebase_show_ms();
         uint32_t time_delta = time_now - scroll_start_time;
         if (time_delta >= 1000) {
@@ -140,21 +164,36 @@ void seg7_fsm(void) {
             scroll_start_time = timebase_show_ms();
         }
     }
-    }
+    }        //switch
 }
 
-const int animation_buffer[12] = { 17, 17, 17, 17, 20, 21, 19, 19, 19, 19, 23,
-        22 };
-const int animation_order[12] = { 0, 1, 2, 3, 3, 3, 3, 2, 1, 0, 0, 0 };
-void seg7_show_animation(void) {
-    int digit = animation_order[curr_animation_digit];
+const int idle_animation_buffer[12] = { 17, 17, 17, 17, 20, 21, 19, 19, 19, 19,
+        23, 22 };
+const int idle_animation_order[12] = { 0, 1, 2, 3, 3, 3, 3, 2, 1, 0, 0, 0 };
+void seg7_show_idle_animation(void) {
+    int digit = idle_animation_order[curr_idle_animation_digit];
     for (int i = 0; i < 4; i++) {
         if (i == digit) {
-            disp_nibble[i] = animation_buffer[curr_animation_digit];
+            disp_nibble[i] = idle_animation_buffer[curr_idle_animation_digit];
         } else {
             disp_nibble[i] = 16; //None
         }
     }
+}
+
+void seg7_show_reqa_animation(void) {
+
+    for (int i = 0; i < 4; i++) {
+        disp_nibble[i] = (reqa_stage) ? 18 : 16;
+    }
+}
+
+void seg7_show_error_animation(void) {
+
+    disp_nibble[0] = (error_stage) ? 14 : 16; //E
+    disp_nibble[1] = (error_stage) ? 24 : 16; //r
+    disp_nibble[2] = (error_stage) ? 24 : 16; //r
+    disp_nibble[3] = 16; //None
 }
 
 void seg7_scroll_digits(void) {

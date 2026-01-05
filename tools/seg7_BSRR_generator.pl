@@ -21,13 +21,14 @@ push @nums, [qw(B C D E G)]; #d
 push @nums, [qw(A D E F G)]; #E
 push @nums, [qw(A E F G)]; #F
 push @nums, [qw()]; #NONE
-push @nums, [qw(A)]; #Top segment
-push @nums, [qw(G)]; #Middle segment
-push @nums, [qw(D)]; #Bottom segment
-push @nums, [qw(B)]; #Top right segment
-push @nums, [qw(C)]; #bottom right segment
-push @nums, [qw(F)]; #Top left segment
-push @nums, [qw(E)]; #Bottom left segment
+push @nums, [qw(A)]; #Top horizontal
+push @nums, [qw(G)]; #Middle horizontal
+push @nums, [qw(D)]; #Bottom horizontal
+push @nums, [qw(B)]; #Top right
+push @nums, [qw(C)]; #bottom right
+push @nums, [qw(F)]; #Top left
+push @nums, [qw(E)]; #Bottom left
+push @nums, [qw(C E G)]; #r
 
 my %seg_ports = (
                  "A" => 5,
@@ -47,7 +48,7 @@ my %dig_ports = (
                  "4" => 3,
                );
            
-print "const uint32_t seg_bsrr[24] = {\n";
+print "const uint32_t seg_bsrr[25] = {\n";
 my $i = 0;
 foreach my $num(@nums){
   my $mask = 0;
@@ -63,7 +64,7 @@ foreach my $num(@nums){
     }
   }
   printf "    ${mask}U";
-  if ($i<23){
+  if ($i<24){
     print ",\n";
   }
   else{

@@ -21,7 +21,7 @@ This approach reflects real embedded product design considerations such as timin
 - **Src/**        - Source files  
 - **Inc/**        - Header files  
 - **Documents/** - Media and documentation  
-- **tools/**     - Helper scripts  
+- **tools/**     - Helper scripts (e.g. BSRR bit-mask generation)
 
 ---
 
