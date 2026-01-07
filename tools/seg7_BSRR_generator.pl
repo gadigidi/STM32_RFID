@@ -30,6 +30,7 @@ push @nums, [qw(F)]; #Top left
 push @nums, [qw(E)]; #Bottom left
 push @nums, [qw(C E G)]; #r
 push @nums, [qw(B C D E F)]; #U
+push @nums, [qw(A C D E F G)]; #G
 
 my $len = @nums;
 

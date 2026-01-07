@@ -48,7 +48,6 @@
 #define RC522_PSC                   67 //Clk after PSC = 13.56MHz/(67*2+1) = ~100kHz
 #define RC522_RELOAD_VAL            4999 //Timeout = 50ms
 
-
 //Functions
 bool rc522_chip_init(void);
 void rc522_hard_reset(void);
@@ -58,23 +57,15 @@ uint8_t rc522_read_reg(uint8_t addr);
 void rc522_modify_reg(uint8_t addr, uint8_t new_data, uint8_t mask);
 
 void rc522_soft_reset(void);
-//void rc522_read_version(void);
 bool rc522_alive_status(void);
 void rc522_enable_irq(void);
 void rc522_clean_flags(void);
 void rc522_clean_fifo(void);
-//void rc522_config_timeout(void);
-//void rc522_config_txask(void);
-//void rc522_turn_on_antennas(void);
-//void rc522_config_mode(void);
-//void rc522_config_crc(void);
+
 
 void rc522_load_fifo(volatile uint8_t *fifo, uint8_t length);
-//void rc522_pre_transceive(void);
 void rc522_transcieve(volatile uint8_t *fifo, uint8_t length,
         uint8_t tx_last_bits);
 uint8_t rc522_read_fifo(volatile uint8_t *fifo);
-
-//void rc522_debug(void); //used for debug
 
 #endif /* RC522_H_ */

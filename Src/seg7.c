@@ -5,12 +5,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-const uint32_t seg_bsrr[26] = { 1610614752U, 1730150592U, 1149248352U,
+const uint32_t seg_bsrr[27] = { 1610614752U, 1730150592U, 1149248352U,
         1174413792U, 1126180032U, 1111500192U, 1077946272U, 1728053472U,
         1073752032U, 1107305952U, 1090528992U, 1080043392U, 1623197472U,
         1142956992U, 1086334752U, 1103111712U, 1742733312U, 1740636192U,
         1205870592U, 1725956352U, 1738539072U, 1734344832U, 1675625472U,
-        1709179392U, 1163928192U, 1612711872U };
+        1709179392U, 1163928192U, 1612711872U, 1077946272U };
 
 //0-9: 0..9
 //10-15: A..F
@@ -24,6 +24,7 @@ const uint32_t seg_bsrr[26] = { 1610614752U, 1730150592U, 1149248352U,
 //23: Bottom left
 //24: r
 //25: U
+//26: G
 
 const uint32_t dig_bsrr[4] = { 65550U, 131085U, 262155U, 524295U };
 
@@ -126,7 +127,7 @@ void seg7_show_idle_animation(void) {
 }
 
 const int uid_blinking_buffer[4] = { 25, 1, 13, 16 }; //U1d
-const int bad_blinking_buffer[4] = { 11, 10, 13, 16 }; //bAd
+const int bad_blinking_buffer[4] = { 26, 10, 13, 1 }; //GAd1
 const int error_blinking_buffer[4] = { 14, 24, 24, 16 }; //Err
 const int default_blinking_buffer[4] = { 16, 16, 16, 16 };
 static const int *blinking_buffer = default_blinking_buffer;
@@ -216,10 +217,3 @@ void seg7_fsm(void) {
     }
     }        //switch
 }
-
-
-
-
-
-
-

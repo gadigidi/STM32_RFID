@@ -8,7 +8,7 @@
 #define RFID_REQA_TIMEOUT_MS            100
 #define RFID_UID_TIMEOUT_MS             100
 #define RFID_CRC_TIMEOUT_MS             100
-#define RFID_SHOW_UID_TIMEOUT_MS        12000 //12 sec
+#define RFID_SHOW_UID_TIMEOUT_MS        12200 //12 sec
 #define RFID_SHOW_STATUS_TIMEOUT_MS     2500 //4 sec
 #define RFID_COOLDOWN_MS                500
 

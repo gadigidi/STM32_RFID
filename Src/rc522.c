@@ -206,17 +206,3 @@ uint8_t rc522_read_fifo(volatile uint8_t *fifo) {
 
     return length;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

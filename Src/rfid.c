@@ -369,13 +369,3 @@ void rfid_fsm(void) {
 
     }            //switch
 }            //rfid_fsm
-
-
-
-
-
-
-
-
-
-
