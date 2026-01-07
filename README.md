@@ -24,7 +24,7 @@ This approach reflects real embedded product design considerations such as timin
 stateDiagram-v2
     RFID_PRE_IDLE --> RFID_IDLE
 
-    RFID_IDLE --> RFID_SEND_REQA : card detect / IRQ
+    RFID_IDLE --> RFID_SEND_REQA : idle_action_timeout
     RFID_SEND_REQA --> RFID_WAIT_ATQA
 
     RFID_WAIT_ATQA --> RFID_SEND_ANTICOL_CL1 : ATQA OK
@@ -48,9 +48,9 @@ stateDiagram-v2
     RFID_UID_STATUS --> RFID_FATAL_ERROR : fatal error
 
     RFID_SHOW_UID_TEXT --> RFID_SHOW_UID_DIGITS
-    RFID_SHOW_UID_DIGITS --> RFID_IDLE
+    RFID_SHOW_UID_DIGITS --> RFID_PRE_IDLE
 
-    RFID_SHOW_ERROR --> RFID_IDLE
+    RFID_SHOW_ERROR --> RFID_PRE_IDLE
 ```
 
 The FSM reflects the actual firmware implementation and maps directly to the codebase.  
