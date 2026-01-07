@@ -16,7 +16,7 @@ This approach reflects real embedded product design considerations such as timin
 
 ---
 
-
+```mermaid
 stateDiagram-v2
     RFID_PRE_IDLE --> RFID_IDLE
 
@@ -47,7 +47,6 @@ stateDiagram-v2
 
     RFID_SHOW_ERROR --> RFID_IDLE : recoverable
     RFID_SHOW_ERROR --> RFID_FATAL_ERROR : fatal
-
 
 ---
 
