@@ -16,6 +16,41 @@ This approach reflects real embedded product design considerations such as timin
 
 ---
 
+
+stateDiagram-v2
+    RFID_PRE_IDLE --> RFID_IDLE
+
+    RFID_IDLE --> RFID_SEND_REQA : card detect / IRQ
+    RFID_SEND_REQA --> RFID_WAIT_ATQA
+
+    RFID_WAIT_ATQA --> RFID_SEND_ANTICOL_CL1 : ATQA OK
+    RFID_WAIT_ATQA --> RFID_SHOW_ERROR : ATQA error
+
+    RFID_SEND_ANTICOL_CL1 --> RFID_WAIT_ANTICOL_CL1
+
+    RFID_WAIT_ANTICOL_CL1 --> RFID_CALC_CRC_CL1 : anticoll OK
+    RFID_WAIT_ANTICOL_CL1 --> RFID_SHOW_ERROR : anticoll error
+
+    RFID_CALC_CRC_CL1 --> RFID_WAIT_CRC_CL1_RESULT
+
+    RFID_WAIT_CRC_CL1_RESULT --> RFID_SEND_SELECT_CL1 : CRC OK
+    RFID_WAIT_CRC_CL1_RESULT --> RFID_SHOW_ERROR : CRC error
+
+    RFID_SEND_SELECT_CL1 --> RFID_WAIT_SAK
+
+    RFID_WAIT_SAK --> RFID_UID_STATUS : SAK OK
+    RFID_WAIT_SAK --> RFID_SHOW_ERROR : SAK error
+
+    RFID_UID_STATUS --> RFID_SHOW_UID_TEXT
+    RFID_SHOW_UID_TEXT --> RFID_SHOW_UID_DIGITS
+    RFID_SHOW_UID_DIGITS --> RFID_IDLE
+
+    RFID_SHOW_ERROR --> RFID_IDLE : recoverable
+    RFID_SHOW_ERROR --> RFID_FATAL_ERROR : fatal
+
+
+---
+
 ## Project Structure
 
 - **Src/**        - Source files  
