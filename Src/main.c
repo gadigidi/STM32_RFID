@@ -1,38 +1,33 @@
 #include "rfid.h"
 #include "rc522.h"
 #include "rc522_debug.h"
-#include "spi.h"
 #include "seg7.h"
 #include "timebase.h"
-#include "gpio.h"
-
 #include <stdio.h>
 #include <stdint.h>
 #include "stm32f446xx.h"
 
 int main(void){
 
-    uint32_t time_now;
-    //uint8_t value;
     timebase_init();
     
     seg7_init();
-    //seg7_enable_scroll(1);
+
+    seg7_set_fsm_state(SEG7_IDLE_ANIMATION);
 
     rfid_init();
 
-    rc522_debug();
+    rfid_fsm_reset();
 
-    volatile uint32_t dummy = 0;
+    //rc522_debug();
 
-    dummy = 0;
     while (1) {
         //time_now = timebase_show_ms();
         seg7_auto_refresh();
 
-        sge7_fsm();
+        seg7_fsm();
 
         rfid_fsm();
-        //seg7_scroll_digits();
+
     }
 }

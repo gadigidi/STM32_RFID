@@ -29,6 +29,9 @@ push @nums, [qw(C)]; #bottom right
 push @nums, [qw(F)]; #Top left
 push @nums, [qw(E)]; #Bottom left
 push @nums, [qw(C E G)]; #r
+push @nums, [qw(B C D E F)]; #U
+
+my $len = @nums;
 
 my %seg_ports = (
                  "A" => 5,
@@ -48,7 +51,7 @@ my %dig_ports = (
                  "4" => 3,
                );
            
-print "const uint32_t seg_bsrr[25] = {\n";
+print "const uint32_t seg_bsrr[$len] = {\n";
 my $i = 0;
 foreach my $num(@nums){
   my $mask = 0;
@@ -64,7 +67,7 @@ foreach my $num(@nums){
     }
   }
   printf "    ${mask}U";
-  if ($i<24){
+  if ($i<($len-1)){
     print ",\n";
   }
   else{

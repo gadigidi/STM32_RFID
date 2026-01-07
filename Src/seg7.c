@@ -5,12 +5,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-const uint32_t seg_bsrr[25] = { 1610614752U, 1730150592U, 1149248352U,
+const uint32_t seg_bsrr[26] = { 1610614752U, 1730150592U, 1149248352U,
         1174413792U, 1126180032U, 1111500192U, 1077946272U, 1728053472U,
         1073752032U, 1107305952U, 1090528992U, 1080043392U, 1623197472U,
         1142956992U, 1086334752U, 1103111712U, 1742733312U, 1740636192U,
         1205870592U, 1725956352U, 1738539072U, 1734344832U, 1675625472U,
-        1709179392U, 1163928192U };
+        1709179392U, 1163928192U, 1612711872U };
 
 //0-9: 0..9
 //10-15: A..F
@@ -18,11 +18,12 @@ const uint32_t seg_bsrr[25] = { 1610614752U, 1730150592U, 1149248352U,
 //17: Top segment
 //18: Middle segment
 //19: Bottom segment
-//20: #Top right
-//21: #bottom right
-//22: #Top left
-//23: #Bottom left
-//24: #r
+//20: Top right
+//21: bottom right
+//22: Top left
+//23: Bottom left
+//24: r
+//25: U
 
 const uint32_t dig_bsrr[4] = { 65550U, 131085U, 262155U, 524295U };
 
@@ -66,15 +67,6 @@ void seg7_show_digit(int digit, int token) {
 
 static uint8_t disp_nibble[4] = { 16, 16, 16, 16 };
 
-/*
-void seg7_update_buffer(uint16_t num) {
-    disp_nibble[3] = ((num >> 0) & 0xFU);
-    disp_nibble[2] = ((num >> 4) & 0xFU);
-    disp_nibble[1] = ((num >> 8) & 0xFU);
-    disp_nibble[0] = ((num >> 12) & 0xFU);
-}
- */
-
 static uint32_t refresh_start_time = 0;
 void seg7_auto_refresh(void) {
     static int curr_digit = 0;
@@ -87,20 +79,35 @@ void seg7_auto_refresh(void) {
     }
 }
 
-static uint8_t scroll_buffer[15];
-void seg7_set_buffer_for_scroll(uint32_t num) {
+static uint8_t scroll_buffer[12];
+static int curr_scroll_digit = 0;
+void seg7_set_buffer_for_scroll(volatile uint8_t *num) {
     scroll_buffer[0] = 16; //None
     scroll_buffer[1] = 16; //None
     scroll_buffer[2] = 16; //None
-    scroll_buffer[3] = ((num >> 0) & 0xFU);
-    scroll_buffer[4] = ((num >> 4) & 0xFU);
-    scroll_buffer[5] = ((num >> 8) & 0xFU);
-    scroll_buffer[6] = ((num >> 12) & 0xFU);
-    scroll_buffer[7] = ((num >> 16) & 0xFU);
-    scroll_buffer[8] = ((num >> 20) & 0xFU);
-    scroll_buffer[9] = ((num >> 24) & 0xFU);
-    scroll_buffer[10] = ((num >> 28) & 0xFU);
+    scroll_buffer[3] = ((num[3] >> 4) & 0xFU);
+    scroll_buffer[4] = (num[3] & 0xFU);
+    scroll_buffer[5] = ((num[2] >> 4) & 0xFU);
+    scroll_buffer[6] = (num[2] & 0xFU);
+    scroll_buffer[7] = ((num[1] >> 4) & 0xFU);
+    scroll_buffer[8] = (num[1] & 0xFU);
+    scroll_buffer[9] = ((num[0] >> 4) & 0xFU);
+    scroll_buffer[10] = (num[0] & 0xFU);
     scroll_buffer[11] = 16; //None
+
+    curr_scroll_digit = 0; //Initialize scroll internal state
+}
+
+void seg7_scroll_digits(void) {
+    int nibbel2show;
+    nibbel2show = (curr_scroll_digit) % 12;
+    disp_nibble[0] = scroll_buffer[nibbel2show];
+    nibbel2show = (curr_scroll_digit + 1) % 12;
+    disp_nibble[1] = scroll_buffer[nibbel2show];
+    nibbel2show = (curr_scroll_digit + 2) % 12;
+    disp_nibble[2] = scroll_buffer[nibbel2show];
+    nibbel2show = (curr_scroll_digit + 3) % 12;
+    disp_nibble[3] = scroll_buffer[nibbel2show];
 }
 
 const int idle_animation_buffer[12] = { 17, 17, 17, 17, 20, 21, 19, 19, 19, 19,
@@ -118,15 +125,16 @@ void seg7_show_idle_animation(void) {
     }
 }
 
-const int good_blinking_buffer[4] = { 9, 0, 0, 13 }; //900d
+const int uid_blinking_buffer[4] = { 25, 1, 13, 16 }; //U1d
 const int bad_blinking_buffer[4] = { 11, 10, 13, 16 }; //bAd
 const int error_blinking_buffer[4] = { 14, 24, 24, 16 }; //Err
 const int default_blinking_buffer[4] = { 16, 16, 16, 16 };
 static const int *blinking_buffer = default_blinking_buffer;
+static int blinking_stage = 0;
 void seg7_set_blinking_text(seg7_blinking_text_t text) {
     switch (text) {
-    case SEG7_GOOD:
-        blinking_buffer = good_blinking_buffer;
+    case SEG7_UID:
+        blinking_buffer = uid_blinking_buffer;
         break;
     case SEG7_BAD:
         blinking_buffer = bad_blinking_buffer;
@@ -137,9 +145,9 @@ void seg7_set_blinking_text(seg7_blinking_text_t text) {
     default:
 
     }
+    blinking_stage = 0;
 }
 
-static int blinking_stage = 0;
 void seg7_show_blinking_animation(void) {
 
     disp_nibble[0] = (blinking_stage) ? blinking_buffer[0] : 16; //Left digit
@@ -148,27 +156,26 @@ void seg7_show_blinking_animation(void) {
     disp_nibble[3] = (blinking_stage) ? blinking_buffer[3] : 16; //Right digit
 }
 
-static int curr_scroll_digit = 0;
-void seg7_scroll_digits(void) {
-    int nibbel2show;
-    nibbel2show = (curr_scroll_digit) % 12;
-    disp_nibble[3] = scroll_buffer[nibbel2show];
-    nibbel2show = (curr_scroll_digit + 1) % 12;
-    disp_nibble[2] = scroll_buffer[nibbel2show];
-    nibbel2show = (curr_scroll_digit + 2) % 12;
-    disp_nibble[1] = scroll_buffer[nibbel2show];
-    nibbel2show = (curr_scroll_digit + 3) % 12;
-    disp_nibble[0] = scroll_buffer[nibbel2show];
+static uint32_t start_time = 0;
+bool seg7_non_blocking_delay(uint32_t delay_ms) {
+    uint32_t time_now = timebase_show_ms();
+    uint32_t time_delta = time_now - start_time;
+    if (time_delta >= delay_ms) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
-static seg7_state_t seg7_state;
+static seg7_state_t seg7_state = SEG7_OFF;
 void seg7_set_fsm_state(seg7_state_t new_state) {
     seg7_state = new_state;
+    start_time = timebase_show_ms();
 }
 
-static uint32_t idle_animation_start_time = 0;
-static uint32_t blinking_animation_start_time = 0;
-static uint32_t scroll_start_time = 0;
+//static uint32_t idle_animation_start_time = 0;
+//static uint32_t blinking_animation_start_time = 0;
+//static uint32_t scroll_start_time = 0;
 void seg7_fsm(void) {
     switch (seg7_state) {
     case SEG7_OFF: {
@@ -176,34 +183,34 @@ void seg7_fsm(void) {
     }
 
     case SEG7_IDLE_ANIMATION: {
-        uint32_t time_now = timebase_show_ms();
-        uint32_t time_delta = time_now - idle_animation_start_time;
-        if (time_delta >= 150) {
+        //uint32_t time_now = timebase_show_ms();
+        //uint32_t time_delta = time_now - idle_animation_start_time;
+        if (seg7_non_blocking_delay(150)) {
             seg7_show_idle_animation();
             curr_idle_animation_digit = (curr_idle_animation_digit + 1) % 12;
-            idle_animation_start_time = timebase_show_ms();
+            start_time = timebase_show_ms();
         }
         break;
     }
 
     case SEG7_BLINKING_ANIMATION: {
-        uint32_t time_now = timebase_show_ms();
-        uint32_t time_delta = time_now - blinking_animation_start_time;
-        if (time_delta >= 300) {
+        //uint32_t time_now = timebase_show_ms();
+        //uint32_t time_delta = time_now - blinking_animation_start_time;
+        if (seg7_non_blocking_delay(300)) {
             seg7_show_blinking_animation();
             blinking_stage = (blinking_stage + 1) % 2;
-            blinking_animation_start_time = timebase_show_ms();
+            start_time = timebase_show_ms();
         }
         break;
     }
 
     case SEG7_SCROLL: {
-        uint32_t time_now = timebase_show_ms();
-        uint32_t time_delta = time_now - scroll_start_time;
-        if (time_delta >= 1000) {
+        //uint32_t time_now = timebase_show_ms();
+        //uint32_t time_delta = time_now - scroll_start_time;
+        if (seg7_non_blocking_delay(1000)) {
             seg7_scroll_digits();
             curr_scroll_digit = (curr_scroll_digit + 1) % 12;
-            scroll_start_time = timebase_show_ms();
+            start_time = timebase_show_ms();
         }
         break;
     }

@@ -3,18 +3,35 @@
 #include "rc522_debug.h"
 #include "timebase.h"
 #include "spi.h"
+#include "exti.h"
 #include <stdio.h>
 #include <stdint.h>
 #include "stm32f446xx.h"
 
-void rc522_chip_init(void) {
+bool rc522_chip_init(void);
+void rc522_hard_reset(void);
+
+void rc522_write_reg(uint8_t addr, uint8_t data);
+uint8_t rc522_read_reg(uint8_t addr);
+void rc522_modify_reg(uint8_t addr, uint8_t new_data, uint8_t mask);
+
+void rc522_soft_reset(void);
+void rc522_read_version(void);
+bool rc522_alive_status(void);
+void rc522_enable_irq(void);
+void rc522_clean_flags(void);
+void rc522_clean_fifo(void);
+void rc522_config_timeout(void);
+void rc522_config_txask(void);
+void rc522_turn_on_antennas(void);
+void rc522_config_mode(void);
+void rc522_config_crc(void);
+
+bool rc522_chip_init(void) {
     rc522_ports_init();
     rc522_hard_reset();
     rc522_soft_reset();
     rc522_read_version();
-    //if (!rc522_alive_status()) {
-        //Do something
-    //}
     rc522_clean_flags();
     rc522_clean_fifo();
     rc522_enable_irq();
@@ -23,6 +40,8 @@ void rc522_chip_init(void) {
     rc522_config_crc();
     rc522_config_txask();
     rc522_turn_on_antennas(); //Turn on antennas
+
+    return !rc522_alive_status(); //Return 0 if chip is alive, 1 if not
 }
 
 void rc522_hard_reset(void) {
@@ -51,9 +70,10 @@ uint8_t rc522_read_reg(uint8_t addr) {
     return data;
 }
 
-void rc522_modify_reg(uint8_t addr, uint8_t new_data) {
+void rc522_modify_reg(uint8_t addr, uint8_t new_data, uint8_t mask) {
     uint8_t old_data = rc522_read_reg(addr);
-    uint8_t data = old_data | new_data;
+    uint8_t data = old_data & ~mask;
+    data |= new_data;
     rc522_write_reg(addr, data);
 }
 
@@ -78,6 +98,10 @@ bool rc522_alive_status(void) {
 }
 
 void rc522_enable_irq(void) {
+    //Enable IRQ from RC522 on EXTI line
+    exti_init();
+    exti_enable_irq(RC522_IRQ_PIN, RC522_IRQ_PORT);
+
     //COMIRQREG.SET1 = 0. Then writing '1' to each IRQ field in COMIRQREG is *clearing* the field
     rc522_write_reg(RC522_COMIRQ_REG, (0 << 7));
     rc522_write_reg(RC522_COMIRQ_REG, 0x7FU); //Clear all IRQs
@@ -85,6 +109,10 @@ void rc522_enable_irq(void) {
     uint8_t value = ((1U << 0) | (1U << 1) | (1U << 5)); //Enable IRQ for timeout, error, RX
     value |= (1U << 7); //Keep bit 7 IRQINV=1. This make IRQ pin active low
     rc522_write_reg(RC522_COMIEN_REG, value);
+
+    rc522_write_reg(RC522_DIVIRQ_REG, (0 << 7));
+    //rc522_write_reg(RC522_DIVIRQ_REG, 0x7FU); //Clear all IRQs
+    rc522_write_reg(RC522_DIVIEN_REG, (1U << 2)); //Enable IRQ from CRC done
     //rc522_debug();
 }
 
@@ -92,6 +120,7 @@ void rc522_clean_flags(void) {
     //Clear IRQ flags for timeout, error, RX
     //uint8_t value = ((1U << 0) | (1U << 1) | (1U << 5));
     rc522_write_reg(RC522_COMIRQ_REG, 0x7FU);
+    rc522_write_reg(RC522_DIVIRQ_REG, 0x4U);
     //rc522_debug();
 }
 
@@ -118,7 +147,7 @@ void rc522_config_timeout(void) {
     //TMODE
     value = (RC522_PSC >> 8) & 0xFU; //4 MSB of prescaler
     value |= (1U << 7); //T-Auto on
-    rc522_modify_reg(RC522_T_MODE_REG, value);
+    rc522_modify_reg(RC522_T_MODE_REG, value, 0x8FU);
 
     //timebase_blocking_delay_ms(1000);
     //rc522_debug();
@@ -130,7 +159,7 @@ void rc522_config_txask(void) {
 }
 
 void rc522_turn_on_antennas(void) {
-    rc522_modify_reg(RC522_TXCONTROL_REG, 0x3);
+    rc522_modify_reg(RC522_TXCONTROL_REG, 0x3, 0x3);
     //rc522_debug();
 }
 
@@ -140,31 +169,35 @@ void rc522_config_mode(void) {
 }
 
 void rc522_config_crc(void) {
-
+    rc522_modify_reg(RC522_MODE_REG, 0x1, 0x3);
 }
 
-void rc522_pre_transcieve(void) {
+void rc522_load_fifo(volatile uint8_t *fifo, uint8_t length) {
     rc522_write_reg(RC522_COMMAND_REG, RC522_COMMAND_IDLE); //Command = IDLE
     rc522_clean_flags();
     rc522_clean_fifo();
+    for (int i = 0; i < length; i++) {
+        rc522_write_reg(RC522_FIFODATA_REG, fifo[i]);
+    }
 }
 
-void rc522_transceive_start(void) {
+void rc522_transcieve(volatile uint8_t *fifo, uint8_t length,
+        uint8_t tx_last_bits) {
+    rc522_load_fifo(fifo, length);
 
     //Command = transcieve
     rc522_write_reg(RC522_COMMAND_REG, RC522_COMMAND_TRANSCIEVE);
     //rc522_debug();
 
-    //BITFRAMING.START_SEND
-    uint8_t value = (1U << 7);
-    rc522_modify_reg(RC522_BITFRAMING_REG, value);
+    //BITFRAMING
+    uint8_t value = (tx_last_bits == 8) ? 0 : tx_last_bits; //value '0' is for 8
+    value |= (1U << 7); //BITFRAMING.START_SEND
+    rc522_write_reg(RC522_BITFRAMING_REG, value);
 
     rc522_debug();
-    //Back to IDLE
-    //rc522_write_reg(RC522_COMMAND_REG, RC522_COMMAND_IDLE);
 }
 
-uint8_t rc522_read_fifo(uint8_t *fifo) {
+uint8_t rc522_read_fifo(volatile uint8_t *fifo) {
     uint8_t length = rc522_read_reg(RC522_FIFOLEVEL_REG);
 
     for (int i = 0; i < length; i++) {
@@ -174,25 +207,8 @@ uint8_t rc522_read_fifo(uint8_t *fifo) {
     return length;
 }
 
-void rc522_send_reqa(void) {
-    rc522_pre_transcieve();
-    rc522_modify_reg(RC522_BITFRAMING_REG, 7); //Last byte of tx is 7 bits
-    uint8_t reqa = 0x26 & 0x7FU;
-    rc522_write_reg(RC522_FIFODATA_REG, reqa);
-    rc522_transceive_start();
-    //rc522_write_reg(RC522_BITFRAMING_REG, 0); //Last byte of tx is 8 bits
-}
 
-void rc522_get_atqa(uint8_t *fifo) {
-    uint8_t length = rc522_read_fifo(fifo);
-    if (length != 2) {
 
-    }
-}
-
-void rc522_read_uid(void) {
-
-}
 
 
 

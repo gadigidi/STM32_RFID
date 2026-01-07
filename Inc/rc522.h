@@ -25,6 +25,8 @@
 #define RC522_RXMODE_REG            0x13U
 #define RC522_TXCONTROL_REG         0x14U
 #define RC522_TXASK_REG             0x15U
+#define RC522_CRC_MSB_REG           0x21U
+#define RC522_CRC_LSB_REG           0x22U
 #define RC522_T_MODE_REG            0x2AU
 #define RC522_T_PRESCALER_REG       0x2BU
 #define RC522_T_RELOAD_H_REG        0x2CU
@@ -48,27 +50,31 @@
 
 
 //Functions
-void rc522_chip_init(void);
+bool rc522_chip_init(void);
 void rc522_hard_reset(void);
+
 void rc522_write_reg(uint8_t addr, uint8_t data);
 uint8_t rc522_read_reg(uint8_t addr);
-void rc522_modify_reg(uint8_t addr, uint8_t new_data);
+void rc522_modify_reg(uint8_t addr, uint8_t new_data, uint8_t mask);
+
 void rc522_soft_reset(void);
-void rc522_read_version(void);
+//void rc522_read_version(void);
 bool rc522_alive_status(void);
 void rc522_enable_irq(void);
 void rc522_clean_flags(void);
 void rc522_clean_fifo(void);
-void rc522_config_timeout(void);
-void rc522_turn_on_antennas(void);
-void rc522_config_mode(void);
-void rc522_config_crc(void);
-void rc522_pre_transceive(void);
-void rc522_transceive_start(void);
-uint8_t rc522_read_fifo(uint8_t *fifo);
-void rc522_send_reqa(void);
-void rc522_read_uid(void);
+//void rc522_config_timeout(void);
+//void rc522_config_txask(void);
+//void rc522_turn_on_antennas(void);
+//void rc522_config_mode(void);
+//void rc522_config_crc(void);
 
-void rc522_debug(void); //used for debug
+void rc522_load_fifo(volatile uint8_t *fifo, uint8_t length);
+//void rc522_pre_transceive(void);
+void rc522_transcieve(volatile uint8_t *fifo, uint8_t length,
+        uint8_t tx_last_bits);
+uint8_t rc522_read_fifo(volatile uint8_t *fifo);
+
+//void rc522_debug(void); //used for debug
 
 #endif /* RC522_H_ */

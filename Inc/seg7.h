@@ -33,7 +33,7 @@ typedef enum {
 } seg7_state_t;
 
 typedef enum {
-    SEG7_GOOD, SEG7_BAD, SEG7_ERROR
+    SEG7_UID, SEG7_BAD, SEG7_ERROR
 } seg7_blinking_text_t;
 
 void seg7_init (void);
@@ -42,7 +42,7 @@ void seg7_deselect_all_digits(void);
 void seg7_select_seg(uint32_t bsrr);
 void seg7_show_digit(int digit, int token);
 void seg7_auto_refresh(void);
-void seg7_set_buffer_for_scroll(uint32_t num);
+void seg7_set_buffer_for_scroll(volatile uint8_t *num);
 void seg7_show_idle_animation(void);
 void seg7_set_blinking_text(seg7_blinking_text_t text);
 void seg7_show_blinking_animation(void);

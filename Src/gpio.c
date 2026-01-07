@@ -33,3 +33,9 @@ void gpio_reset_LED(void) {
     GPIOA->BSRR = (LED_PIN << 16);
 }
 
+int gpio_char_to_int(char letter) {
+    if ((letter < 'A') || (letter > 'H')) {
+        return -1;
+    }
+    return (int) (letter - 'A'); //Will return 0 for 'A', 1 for 'B' etc..
+}
