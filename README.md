@@ -16,6 +16,10 @@ This approach reflects real embedded product design considerations such as timin
 
 ---
 
+## System Architecture
+
+### RFID State Machine – ISO14443A CL1 UID Flow
+
 ```mermaid
 stateDiagram-v2
     RFID_PRE_IDLE --> RFID_IDLE
@@ -47,6 +51,10 @@ stateDiagram-v2
 
     RFID_SHOW_ERROR --> RFID_IDLE : recoverable
     RFID_SHOW_ERROR --> RFID_FATAL_ERROR : fatal
+```
+
+The FSM reflects the actual firmware implementation and maps directly to the codebase.  
+Each protocol phase is explicitly modeled to enable deterministic, non-blocking execution.
 
 ---
 
@@ -63,7 +71,7 @@ stateDiagram-v2
 
 The RC522 module is connected to the STM32 via SPI.
 
-The RC522 **RST** pin and **CS** pin are held high using an external **10 kΩ pull-up resistors** to 3.3 V to ensure stable operation and prevent unintended resets.
+The RC522 **RST** pin and **CS** pin are held high using external **10 kΩ pull-up resistors** to 3.3 V to ensure stable operation and prevent unintended resets.
 
 The **IRQ** signal is connected to an EXTI-capable GPIO pin for interrupt-driven operation.
 
