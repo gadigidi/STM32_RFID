@@ -41,16 +41,16 @@ stateDiagram-v2
     RFID_WAIT_CRC_CL1_RESULT --> RFID_SHOW_ERROR : CRC error
 
     RFID_SEND_SELECT_CL1 --> RFID_WAIT_SAK
+    RFID_WAIT_SAK --> RFID_UID_STATUS
 
-    RFID_WAIT_SAK --> RFID_UID_STATUS : SAK OK
-    RFID_WAIT_SAK --> RFID_SHOW_ERROR : SAK error
+    RFID_UID_STATUS --> RFID_SHOW_UID_TEXT : UID valid
+    RFID_UID_STATUS --> RFID_SHOW_ERROR : recoverable error
+    RFID_UID_STATUS --> RFID_FATAL_ERROR : fatal error
 
-    RFID_UID_STATUS --> RFID_SHOW_UID_TEXT
     RFID_SHOW_UID_TEXT --> RFID_SHOW_UID_DIGITS
     RFID_SHOW_UID_DIGITS --> RFID_IDLE
 
-    RFID_SHOW_ERROR --> RFID_IDLE : recoverable
-    RFID_SHOW_ERROR --> RFID_FATAL_ERROR : fatal
+    RFID_SHOW_ERROR --> RFID_IDLE
 ```
 
 The FSM reflects the actual firmware implementation and maps directly to the codebase.  
