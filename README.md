@@ -82,7 +82,7 @@ The 7-segment display is connected to the STM32 GPIO pins through **current-limi
 ## Status
 
 The RC522 subsystem is operational with a non-blocking, IRQ-driven FSM.  
-REQA short frames (7-bit) are transmitted correctly, and valid ATQA responses are received from ISO14443A cards.
+REQA short frames (4-bit) are transmitted correctly, and valid ATQA responses are received from ISO14443A cards.
 
 This milestone confirms a stable RF link and correct low-level configuration, forming a solid base for incremental FSM expansion toward UID anti-collision and card selection.
 
