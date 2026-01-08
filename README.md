@@ -18,7 +18,7 @@ This approach reflects real embedded product design considerations such as timin
 
 ## System Architecture
 
-### RFID State Machine – ISO14443A CL1 UID Flow
+### RFID State Machine - ISO14443A CL1 UID Flow
 
 ```mermaid
 stateDiagram-v2
@@ -41,14 +41,18 @@ stateDiagram-v2
     RFID_WAIT_CRC_CL1_RESULT --> RFID_SHOW_ERROR : CRC error
 
     RFID_SEND_SELECT_CL1 --> RFID_WAIT_SAK
-    RFID_WAIT_SAK --> RFID_UID_STATUS
+    RFID_WAIT_SAK --> RFID_CHECK_STATUS
 
-    RFID_UID_STATUS --> RFID_SHOW_UID_TEXT : UID valid
-    RFID_UID_STATUS --> RFID_SHOW_ERROR : recoverable error
-    RFID_UID_STATUS --> RFID_FATAL_ERROR : fatal error
+    RFID_CHECK_STATUS --> RFID_SHOW_UID_TEXT : UID valid
+    RFID_CHECK_STATUS --> RFID_SHOW_ERROR : recoverable error
+    RFID_CHECK_STATUS --> RFID_FATAL_ERROR : fatal error
 
     RFID_SHOW_UID_TEXT --> RFID_SHOW_UID_DIGITS
-    RFID_SHOW_UID_DIGITS --> RFID_PRE_IDLE
+    RFID_SHOW_UID_DIGITS --> RFID_CHECK_AUTHORIZED
+
+    RFID_CHECK_AUTHORIZED --> RFID_SHOW_AUTHORIZED: UID match
+    RFID_CHECK_AUTHORIZED --> RFID_SHOW_ERROR: No match
+    RFID_SHOW_AUTHORIZED --> RFID_PRE_IDLE
 
     RFID_SHOW_ERROR --> RFID_PRE_IDLE
 ```
@@ -81,8 +85,6 @@ The 7-segment display is connected to the STM32 GPIO pins through **current-limi
 
 ## Status
 
-The RC522 subsystem is operational with a non-blocking, IRQ-driven FSM.  
-REQA short frames (4-bit) are transmitted correctly, and valid ATQA responses are received from ISO14443A cards.
-
-This milestone confirms a stable RF link and correct low-level configuration, forming a solid base for incremental FSM expansion toward UID anti-collision and card selection.
+A complete RFID read flow is implemented, including card detection, UID retrieval, explicit error paths, and real-time 7-segment display feedback.
+The system currently supports 4-byte UID cards (CL1).
 

@@ -23,6 +23,7 @@ void rfid_get_atqa(void);
 void rfid_send_anticol_cl1(void);
 void rfid_send_select_cl1(void);
 void rfid_fsm(void);
+void rfid_fsm_reset(void);
 void rfid_update_irq_flag(void);
 bool rfid_show_pending_irq_status(void);
 bool rfid_check_error(void);

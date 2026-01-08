@@ -65,7 +65,7 @@ typedef enum {
     RFID_WAIT_CRC_CL1_RESULT,
     RFID_SEND_SELECT_CL1,
     RFID_WAIT_SAK,
-    RFID_UID_STATUS,
+    RFID_CHECK_STATUS,
     RFID_SHOW_UID_TEXT,
     RFID_SHOW_UID_DIGITS,
     RFID_CHECK_UID_AUTHORIZED,
@@ -85,7 +85,7 @@ static volatile uint8_t fifo[64];
 void rfid_send_reqa(void) {
     fifo[0] = 0x26 & 0x7FU; //Send REQA
     rc522_transcieve(fifo, 1, 7);
-    uint8_t fifo_level = rc522_read_reg(RC522_FIFOLEVEL_REG);
+    //uint8_t fifo_level = rc522_read_reg(RC522_FIFOLEVEL_REG);
 }
 
 void rfid_get_atqa(void) {
@@ -262,6 +262,13 @@ void rfid_fsm(void) {
                 uid[2] = fifo[2];
                 uid[3] = fifo[3];
                 bcc1_recieved = fifo[4];
+                uint8_t ct = fifo[0];
+
+                if (ct == 0x88) { //CT is a flag for long UID
+                    rfid_show_error();
+                    rfid_state = RFID_SHOW_ERROR;
+                    timeout_start_time = timebase_show_ms();
+                }
 
                 bool bcc_okay = rfid_check_bcc(uid, 4, bcc1_recieved);
                 if (!bcc_okay) {
@@ -319,7 +326,7 @@ void rfid_fsm(void) {
             rfid_pending_irq = 0;
             //rc522_debug();
             if (comirqreg & 0x4) { //CRC IRQ
-                uint8_t fifolevel = rc522_read_reg(RC522_FIFOLEVEL_REG);
+                //uint8_t fifolevel = rc522_read_reg(RC522_FIFOLEVEL_REG);
                 int length = rc522_read_fifo(fifo);
                 if (length != 3) {
                     error_detected = 1;
@@ -333,16 +340,15 @@ void rfid_fsm(void) {
                         error_detected = 1;
                     }
                 }
-
                 //rc522_debug();
-                rfid_state = RFID_UID_STATUS;
+                rfid_state = RFID_CHECK_STATUS;
                 timeout_start_time = timebase_show_ms();
             }
         }
         break;
     }
     
-    case RFID_UID_STATUS: {
+    case RFID_CHECK_STATUS: {
         if (error_detected) {
             rfid_show_error();
             rfid_state = RFID_SHOW_ERROR;
