@@ -8,10 +8,12 @@
 #define RFID_REQA_TIMEOUT_MS            100
 #define RFID_UID_TIMEOUT_MS             100
 #define RFID_CRC_TIMEOUT_MS             100
-#define RFID_SHOW_UID_TIMEOUT_MS        12200 //12 sec
-#define RFID_SHOW_STATUS_TIMEOUT_MS     2500 //4 sec
+#define RFID_SHOW_UID_TIMEOUT_MS        8000 //8 sec sec
+#define RFID_SHOW_STATUS_TIMEOUT_MS     3200 //3.2 sec
 #define RFID_COOLDOWN_MS                500
 
+#define RFID_GADI_CARD                  0x238D90B5U
+#define RFID_DAN_CARD                   0xC2E5CD49U
 
 void rfid_init(void);
 void rfid_enable_irq(void);

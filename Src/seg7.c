@@ -22,7 +22,7 @@ const uint32_t seg_bsrr[27] = { 1610614752U, 1730150592U, 1149248352U,
 //21: bottom right
 //22: Top left
 //23: Bottom left
-//24: r
+//24: r / n
 //25: U
 //26: G
 
@@ -82,18 +82,18 @@ void seg7_auto_refresh(void) {
 
 static uint8_t scroll_buffer[12];
 static int curr_scroll_digit = 0;
-void seg7_set_buffer_for_scroll(volatile uint8_t *num) {
+void seg7_set_buffer_for_scroll(volatile uint8_t *bytes) {
     scroll_buffer[0] = 16; //None
     scroll_buffer[1] = 16; //None
     scroll_buffer[2] = 16; //None
-    scroll_buffer[3] = ((num[3] >> 4) & 0xFU);
-    scroll_buffer[4] = (num[3] & 0xFU);
-    scroll_buffer[5] = ((num[2] >> 4) & 0xFU);
-    scroll_buffer[6] = (num[2] & 0xFU);
-    scroll_buffer[7] = ((num[1] >> 4) & 0xFU);
-    scroll_buffer[8] = (num[1] & 0xFU);
-    scroll_buffer[9] = ((num[0] >> 4) & 0xFU);
-    scroll_buffer[10] = (num[0] & 0xFU);
+    scroll_buffer[3] = ((bytes[3] >> 4) & 0xFU);
+    scroll_buffer[4] = (bytes[3] & 0xFU);
+    scroll_buffer[5] = ((bytes[2] >> 4) & 0xFU);
+    scroll_buffer[6] = (bytes[2] & 0xFU);
+    scroll_buffer[7] = ((bytes[1] >> 4) & 0xFU);
+    scroll_buffer[8] = (bytes[1] & 0xFU);
+    scroll_buffer[9] = ((bytes[0] >> 4) & 0xFU);
+    scroll_buffer[10] = (bytes[0] & 0xFU);
     scroll_buffer[11] = 16; //None
 
     curr_scroll_digit = 0; //Initialize scroll internal state
@@ -127,7 +127,8 @@ void seg7_show_idle_animation(void) {
 }
 
 const int uid_blinking_buffer[4] = { 25, 1, 13, 16 }; //U1d
-const int bad_blinking_buffer[4] = { 26, 10, 13, 1 }; //GAd1
+const int gadi_blinking_buffer[4] = { 26, 10, 13, 1 }; //GAd1
+const int dan_blinking_buffer[4] = { 13, 10, 24, 16 }; //dAn
 const int error_blinking_buffer[4] = { 14, 24, 24, 16 }; //Err
 const int default_blinking_buffer[4] = { 16, 16, 16, 16 };
 static const int *blinking_buffer = default_blinking_buffer;
@@ -137,8 +138,11 @@ void seg7_set_blinking_text(seg7_blinking_text_t text) {
     case SEG7_UID:
         blinking_buffer = uid_blinking_buffer;
         break;
-    case SEG7_BAD:
-        blinking_buffer = bad_blinking_buffer;
+    case SEG7_GADI:
+        blinking_buffer = gadi_blinking_buffer;
+        break;
+    case SEG7_DAN:
+        blinking_buffer = dan_blinking_buffer;
         break;
     case SEG7_ERROR:
         blinking_buffer = error_blinking_buffer;
@@ -186,7 +190,7 @@ void seg7_fsm(void) {
     case SEG7_IDLE_ANIMATION: {
         //uint32_t time_now = timebase_show_ms();
         //uint32_t time_delta = time_now - idle_animation_start_time;
-        if (seg7_non_blocking_delay(150)) {
+        if (seg7_non_blocking_delay(80)) {
             seg7_show_idle_animation();
             curr_idle_animation_digit = (curr_idle_animation_digit + 1) % 12;
             start_time = timebase_show_ms();
@@ -197,7 +201,7 @@ void seg7_fsm(void) {
     case SEG7_BLINKING_ANIMATION: {
         //uint32_t time_now = timebase_show_ms();
         //uint32_t time_delta = time_now - blinking_animation_start_time;
-        if (seg7_non_blocking_delay(300)) {
+        if (seg7_non_blocking_delay(350)) {
             seg7_show_blinking_animation();
             blinking_stage = (blinking_stage + 1) % 2;
             start_time = timebase_show_ms();
@@ -208,7 +212,7 @@ void seg7_fsm(void) {
     case SEG7_SCROLL: {
         //uint32_t time_now = timebase_show_ms();
         //uint32_t time_delta = time_now - scroll_start_time;
-        if (seg7_non_blocking_delay(1000)) {
+        if (seg7_non_blocking_delay(650)) {
             seg7_scroll_digits();
             curr_scroll_digit = (curr_scroll_digit + 1) % 12;
             start_time = timebase_show_ms();

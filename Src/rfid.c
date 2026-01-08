@@ -68,6 +68,8 @@ typedef enum {
     RFID_UID_STATUS,
     RFID_SHOW_UID_TEXT,
     RFID_SHOW_UID_DIGITS,
+    RFID_CHECK_UID_AUTHORIZED,
+    RFID_SHOW_UID_AUTHORIZED,
     RFID_SHOW_ERROR,
     RFID_FATAL_ERROR
 } rfid_state_t;
@@ -138,6 +140,17 @@ void rfid_show_uid_digits(void) {
     seg7_set_fsm_state(SEG7_SCROLL);
 }
 
+void rfid_show_uid_authorized(uint32_t internal_id) {
+    //Need to add list function later TODO
+    if (internal_id == 0) {
+        seg7_set_blinking_text(SEG7_GADI);
+    }
+    if (internal_id == 1) {
+        seg7_set_blinking_text(SEG7_DAN);
+    }
+    seg7_set_fsm_state(SEG7_BLINKING_ANIMATION);
+}
+
 void rfid_show_error(void) {
     seg7_set_blinking_text(SEG7_ERROR);
     seg7_set_fsm_state(SEG7_BLINKING_ANIMATION);
@@ -184,6 +197,7 @@ void rfid_fsm(void) {
     case RFID_PRE_IDLE: {
         read_uid_completed = 0;
         error_detected = 0;
+        seg7_set_fsm_state(SEG7_IDLE_ANIMATION);
         rfid_state = RFID_IDLE;
         timeout_start_time = timebase_show_ms();
         break;
@@ -353,8 +367,33 @@ void rfid_fsm(void) {
 
     case RFID_SHOW_UID_DIGITS:
     {
-        rfid_non_blocking_timeout(RFID_SHOW_UID_TIMEOUT_MS, RFID_PRE_IDLE);
+        rfid_non_blocking_timeout(RFID_SHOW_UID_TIMEOUT_MS,
+                RFID_CHECK_UID_AUTHORIZED);
         break;
+    }
+
+    case RFID_CHECK_UID_AUTHORIZED: {
+        uint32_t uid_recieved = (uid[3] << 24) | (uid[2] << 16) | (uid[1] << 8)
+                | uid[0];
+        if (uid_recieved == RFID_GADI_CARD) {
+            rfid_show_uid_authorized(0);
+            rfid_state = RFID_SHOW_UID_AUTHORIZED;
+        }
+        else if (uid_recieved == RFID_DAN_CARD) {
+            rfid_show_uid_authorized(1);
+            rfid_state = RFID_SHOW_UID_AUTHORIZED;
+        }
+        else {
+            rfid_state = RFID_PRE_IDLE;
+        }
+        timeout_start_time = timebase_show_ms();
+        break;
+    }
+
+    case RFID_SHOW_UID_AUTHORIZED: {
+        rfid_non_blocking_timeout(RFID_SHOW_STATUS_TIMEOUT_MS, RFID_PRE_IDLE);
+        break;
+
     }
 
     case RFID_SHOW_ERROR: {
