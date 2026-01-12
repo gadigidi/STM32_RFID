@@ -10,6 +10,13 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+void rfid_enable_irq(void);
+void rfid_spi1_config(void);
+void rfid_send_reqa(void);
+void rfid_get_atqa(void);
+void rfid_send_anticol_cl1(void);
+void rfid_send_select_cl1(void);
+
 static bool fatal_error_detected = 0;
 static bool error_detected = 0;
 static bool read_uid_completed = 0;

@@ -62,7 +62,6 @@ void rc522_enable_irq(void);
 void rc522_clean_flags(void);
 void rc522_clean_fifo(void);
 
-
 void rc522_load_fifo(volatile uint8_t *fifo, uint8_t length);
 void rc522_transcieve(volatile uint8_t *fifo, uint8_t length,
         uint8_t tx_last_bits);
