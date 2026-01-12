@@ -4,6 +4,8 @@
 
 > **It’s not a demo - it’s a system.**
 
+![RFID system setup](Documents/RFID.jpg)
+
 This project is intentionally designed as a **system-level embedded application**, built **from scratch** using custom peripheral drivers.
 
 The focus is on **modular firmware architecture**, **non-blocking execution**, and **event-driven design**.  
