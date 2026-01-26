@@ -13,6 +13,7 @@ Peripheral drivers (**TIMER, SPI, GPIO, EXTI**) are implemented as independent m
 
 The RFID reader (RC522) operates using **interrupt-based signaling**, allowing the main system to remain responsive.  
 At the same time, a **7-segment display is refreshed continuously in the background**, demonstrating concurrent task handling without blocking delays.
+Display animations run continuously in real time (IDLE, blinking, scrolling, detection/error states) controlled by the main FSM.
 
 This approach reflects real embedded product design considerations such as timing, scalability, and clean API boundaries.
 
@@ -29,7 +30,7 @@ Each protocol phase is explicitly modeled to enable deterministic, non-blocking 
 
 ---
 
-## Project Structure
+## Project Structureד
 
 - **Src/**        - Source files  
 - **Inc/**        - Header files  
